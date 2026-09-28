@@ -26,4 +26,5 @@
 /pcode
 /tags
 toolchain/
+.venv-esptool/
 

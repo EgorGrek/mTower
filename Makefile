@@ -113,13 +113,18 @@ create_context: Make.defs .config
 # cross compiler (loading and unpacking). 
 
 $(TOPDIR)/toolchain/$(GCC_SOURCE):
-	$(Q) if [ ! -e $(TOPDIR)/toolchain/$(GCC_SOURCE) ]; then \
+	$(Q) if [ "$(subst ",,$(GCC_SITE))" = "none" ]; then \
+		mkdir -p $(TOPDIR)/toolchain ; \
+		touch $(TOPDIR)/toolchain/$(GCC_SOURCE) ; \
+	elif [ ! -e $(TOPDIR)/toolchain/$(GCC_SOURCE) ]; then \
 		mkdir -p $(TOPDIR)/toolchain ; \
 		wget -P $(TOPDIR)/toolchain $(GCC_SITE)/$(GCC_SOURCE) ; \
 	fi
 
 gcc-unpacked: $(TOPDIR)/toolchain/$(GCC_SOURCE)
-	$(Q) if [ ! -d $(TOOLCHAINPATH) ]; then \
+	$(Q) if [ "$(subst ",,$(GCC_SITE))" = "none" ]; then \
+		echo "Using host toolchain (CROSSDEV from Make.defs)" ; \
+	elif [ ! -d $(TOOLCHAINPATH) ]; then \
 		tar xvf $(TOPDIR)/toolchain/$(GCC_SOURCE) -C $(TOPDIR)/toolchain ; \
 	fi
 

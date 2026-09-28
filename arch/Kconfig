@@ -69,6 +69,16 @@ config GCC_VERSION_10_2_0_2020_12
 config GCC_VERSION_T_HEAD_10_2_0
 	bool "GCC compiler Version: T-Head GCC 10.2.0"
 
+config GCC_VERSION_ESP_RISCV32
+	bool "GCC compiler: Espressif riscv32-esp-elf (host PATH)"
+	---help---
+		Use riscv32-esp-elf from PATH (or ESP_IDF tools). No tarball download.
+
+config GCC_VERSION_HOST_RISCV64
+	bool "GCC compiler: host riscv64-unknown-elf (rv32imc)"
+	---help---
+		Use system riscv64-unknown-elf-gcc with -march=rv32imc for ESP32-C3.
+
 endchoice
 
 config GCC_VERSION
@@ -78,6 +88,9 @@ config GCC_VERSION
 	default arm-none-eabi-8-2018-q4-major-linux    if GCC_VERSION_8_2018Q4
 	# default gcc-arm-none-eabi-8-2019-q3-update-linux   if GCC_VERSION_8_2019Q3
 	default riscv64-unknown-elf-toolchain-10.2.0-2020.12.8-x86_64-linux-ubuntu14 if GCC_VERSION_10_2_0_2020_12
+	default toolchain_gcc_t-head_linux-master if GCC_VERSION_T_HEAD_10_2_0
+	default esp-riscv32-host if GCC_VERSION_ESP_RISCV32
+	default host-riscv64-unknown-elf if GCC_VERSION_HOST_RISCV64
 
 config GCC_SITE
 	string
@@ -89,6 +102,8 @@ config GCC_SITE
 	# https://developer.arm.com/-/media/Files/downloads/gnu-rm/8-2019q3/RC1.1/gcc-arm-none-eabi-8-2019-q3-update-linux.tar.bz2?revision=c34d758a-be0c-476e-a2de-af8c6e16a8a2?product=GNU%20Arm%20Embedded%20Toolchain%20Downloads,64-bit,,Linux,8-2019-q3-update
 	default "https://static.dev.sifive.com/dev-tools/freedom-tools/v2020.12" 	if GCC_VERSION_10_2_0_2020_12
 	default "https://github.com/bouffalolab/toolchain_gcc_t-head_linux" if GCC_VERSION_T_HEAD_10_2_0
+	default "none" if GCC_VERSION_ESP_RISCV32
+	default "none" if GCC_VERSION_HOST_RISCV64
 
 config GCC_FOLDER
 	string
@@ -98,3 +113,5 @@ config GCC_FOLDER
 	# default "gcc-arm-none-eabi-8-2019-q3-update"   if GCC_VERSION_8_2019Q3
 	default "riscv64-unknown-elf-toolchain-10.2.0-2020.12.8-x86_64-linux-ubuntu14" if GCC_VERSION_10_2_0_2020_12
 	default "toolchain_gcc_t-head_linux-master" if GCC_VERSION_T_HEAD_10_2_0
+	default "host" if GCC_VERSION_ESP_RISCV32
+	default "host" if GCC_VERSION_HOST_RISCV64

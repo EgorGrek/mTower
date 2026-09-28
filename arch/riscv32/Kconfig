@@ -15,7 +15,12 @@ config ARCH_FAMILY_FE310
 config ARCH_FAMILY_BL808
 	bool "BL808"
 	---help---
-		The BL808 architecture	
+		The BL808 architecture
+
+config ARCH_FAMILY_ESP32C3
+	bool "ESP32-C3"
+	---help---
+		The Espressif ESP32-C3 architecture
 
 endchoice
 
@@ -23,6 +28,7 @@ config ARCH_FAMILY
 	string
 	default "fe310"            if ARCH_FAMILY_FE310
 	default "bl808"            if ARCH_FAMILY_BL808
+	default "esp32c3"          if ARCH_FAMILY_ESP32C3
 
 if ARCH_FAMILY_FE310
 comment "FE310 Configuration Options"
@@ -33,4 +39,8 @@ if ARCH_FAMILY_BL808
 comment "BL808 Configuration Options"
 source arch/riscv32/bl808/Kconfig
 endif
-	
+
+if ARCH_FAMILY_ESP32C3
+comment "ESP32-C3 Configuration Options"
+source arch/riscv32/esp32c3/Kconfig
+endif

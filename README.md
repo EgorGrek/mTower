@@ -61,12 +61,25 @@ between platforms, a `PLATFORM` flag has been introduced.
 | [V2M-MPS2]                |`PLATFORM=mps2_an505_qemu`          | v0.6.1     |
 | [SparkFun RED-V RedBoard] |`PLATFORM=sparkfun_redboard`        | v0.6.1     |
 | [Pine64 Ox64]             |`PLATFORM=pine64_ox64`              | v0.6.1     |
+| [ESP32-C3 Super Mini]     |`PLATFORM=esp32c3_supermini`        | Phase 1    |
 
 For information on adding a new platform see the [how to add a platform].
 
 ---
 ## 4. Get and build mTower software
 Please see [build] for instructions how to run mTower on various devices.
+
+For **ESP32-C3 Super Mini**, see [docs/esp32c3_supermini.md](docs/esp32c3_supermini.md)
+(build, VirtualBox USB passthrough, and the local Python venv for `esptool`).
+
+Quick esptool setup on modern Ubuntu (avoids `externally-managed-environment`):
+
+```sh
+sudo apt install -y python3-venv python3-pip
+./tools/setup-esptool-venv.sh
+make PLATFORM=esp32c3_supermini create_context && make
+make flash ESP_PORT=/dev/ttyACM0
+```
 
 ---
 ## 5. Source code structure
@@ -114,3 +127,4 @@ you can find here](.github/CONTRIBUTING.md).
 [V2M-MPS2]: https://developer.arm.com/documentation/100964/1114/Microcontroller-Prototyping-System-2?lang=en
 [SparkFun RED-V RedBoard]: https://www.sparkfun.com/products/15594
 [Pine64 Ox64]: https://wiki.pine64.org/wiki/Ox64
+[ESP32-C3 Super Mini]: docs/esp32c3_supermini.md

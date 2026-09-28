@@ -35,9 +35,14 @@ SRCS  = croutine.c list.c queue.c stream_buffer.c tasks.c timers.c event_groups.
 SRCS += portable/GCC/$(FREE_RTOS_ARCH)/port.c portable/MemMang/heap_4.c
 
 ifeq ($(FREE_RTOS_ARCH), RISC-V)
+ifeq ($(CONFIG_ARCH_FAMILY_ESP32C3),y)
+# ESP32-C3 Phase 1: no PMP/MPU wrappers (cooperative SYSTIMER tick).
+CFLAGS += -DportUSING_MPU_WRAPPERS=0
+else
 SRCS += portable/GCC/$(FREE_RTOS_ARCH)/pmp.c
 SRCS += portable/Common/mpu_wrappers.c
 CFLAGS += -DportUSING_MPU_WRAPPERS=1
+endif
 endif
 
 ifneq ($(WORLD), secure)

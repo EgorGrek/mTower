@@ -1,0 +1,66 @@
+#
+# For a description of the syntax of this configuration file,
+# see the file kconfig-language.txt in the docs folder of mTower repository.
+#
+
+choice
+	prompt "ESP32-C3 platform selection"
+	default PLATFORM_ESP32C3_SUPERMINI
+
+config PLATFORM_ESP32C3_SUPERMINI
+	bool "ESP32-C3 Super Mini board"
+	---help---
+		ESP32-C3 Super Mini board.
+
+endchoice
+
+config PLATFORM
+	string
+	default "esp32c3_supermini"  if PLATFORM_ESP32C3_SUPERMINI
+
+if PLATFORM_ESP32C3_SUPERMINI
+source arch/riscv32/esp32c3/src/esp32c3_supermini/Kconfig
+endif
+
+choice
+	prompt "Non-secure debug UART configuration"
+	default NONSECURE_DEBUG_UART0
+
+config NONSECURE_DEBUG_UART0
+	bool "UART0 / USB-Serial-JTAG"
+	---help---
+		Console via UART0 or on-chip USB-Serial-JTAG.
+
+endchoice
+
+config NONSECURE_DEBUG_UART
+	string
+	default "UART0"            if NONSECURE_DEBUG_UART0
+
+choice
+	prompt "Non-secure debug font color configuration"
+	default NONSECURE_FONT_GREEN
+
+config NONSECURE_FONT_RED
+	bool "RED"
+
+config NONSECURE_FONT_GREEN
+	bool "GREEN"
+
+config NONSECURE_FONT_YELLOW
+	bool "YELLOW"
+
+config NONSECURE_FONT_BLUE
+	bool "BLUE"
+
+config NONSECURE_FONT_GRAY
+	bool "GRAY"
+endchoice
+
+config NONSECURE_FONT_COLOR
+	int
+	default 1            if NONSECURE_FONT_RED
+	default 2            if NONSECURE_FONT_GREEN
+	default 3            if NONSECURE_FONT_YELLOW
+	default 4            if NONSECURE_FONT_BLUE
+	default 7            if NONSECURE_FONT_GRAY

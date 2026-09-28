@@ -1,0 +1,5 @@
+#
+# ESP32-C3 Super Mini peripheral options
+#
+
+comment "ESP32-C3 Super Mini Peripheral Configuration Options"

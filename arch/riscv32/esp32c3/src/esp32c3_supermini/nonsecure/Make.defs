@@ -1,0 +1,27 @@
+############################################################################
+# arch/riscv32/esp32c3/src/esp32c3_supermini/nonsecure/Make.defs
+#
+# Copyright (c) 2026 Samsung Electronics Co., Ltd. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+############################################################################
+
+HEAD_ASRC =
+
+CMN_ASRCS =
+CMN_CSRCS =
+
+CHIP_ASRCS_NS = ../../esp-hal/esp_startup.S \
+                $(TOPDIR)/freertos/portable/GCC/RISC-V/portASM.S
+
+CHIP_CSRCS_NS = main_ns.c \
+                printf.c \
+                ../../esp-hal/esp_uart.c \
+                ../../esp-hal/esp_systimer.c \
+                ../../esp-hal/esp_gpio.c \
+                ../../esp-hal/esp_freertos_port.c
+
+# TEE Client hello_world CA is optional; Secure World not in Phase 1.
+# ifeq ($(CONFIG_APPS_HELLO_WORLD),y)
+# CHIP_CSRCS_NS += $(TOPDIR)/apps/hello_world/ca/hello_world_ns.c
+# endif

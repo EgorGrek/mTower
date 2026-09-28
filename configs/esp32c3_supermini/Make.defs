@@ -1,0 +1,115 @@
+############################################################################
+# configs/esp32c3_supermini/Make.defs
+#
+# Copyright (c) 2026 Samsung Electronics Co., Ltd. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+############################################################################
+
+-include ${TOPDIR}/.config
+
+GCC_OFFICIAL_VER:=$(CONFIG_GCC_VERSION)
+GCC_SITE:=$(CONFIG_GCC_SITE)
+GCC_SOURCE:=$(GCC_OFFICIAL_VER).tar.gz
+
+# Prefer Espressif toolchain from PATH when selected; else host riscv64-unknown-elf.
+ifeq ($(CONFIG_GCC_VERSION_ESP_RISCV32),y)
+  CROSSDEV = riscv32-esp-elf-
+else ifeq ($(CONFIG_GCC_VERSION_HOST_RISCV64),y)
+  CROSSDEV = riscv64-unknown-elf-
+else
+  TOOLCHAINPATH=$(TOPDIR)/toolchain/$(subst ",,$(CONFIG_GCC_FOLDER))
+  CROSSDEV =$(TOOLCHAINPATH)/bin/riscv32-esp-elf-
+endif
+
+CC = $(CROSSDEV)gcc
+LD = $(CROSSDEV)ld
+AR = $(CROSSDEV)ar rcs
+NM = $(CROSSDEV)nm
+OBJCOPY = $(CROSSDEV)objcopy
+OBJDUMP = $(CROSSDEV)objdump
+SIZE = $(CROSSDEV)size
+
+ARCHWARNINGS = -Wall -Wextra -Wstrict-prototypes -Wshadow -Wundef -Wunused-parameter
+ARCHWARNINGS += -Wno-unused-parameter -Wno-unused-variable
+
+ARCHOPTIMIZATION = $(subst ",,$(CONFIG_OPTIMIZATION_LEVEL))
+
+ifeq ($(CONFIG_DEBUG_SYMBOLS),y)
+  ARCHOPTIMIZATION += -g
+else
+  ARCHOPTIMIZATION += -ffunction-sections -fdata-sections
+endif
+
+ifeq ($(CONFIG_DEBUG_INF_GDB),y)
+  ARCHOPTIMIZATION += -ggdb
+endif
+
+# ESP32-C3 is RV32IMC (no A extension).
+ARCHCPUFLAGS = -march=rv32imc_zicsr_zifencei -mabi=ilp32 -mcmodel=medlow
+
+ESP_IDF ?= $(abspath $(TOPDIR)/../esp-idf)
+
+ARCHINCLUDES  = -I$(TOPDIR)/include
+ARCHINCLUDES += -I$(TOPDIR)/include/mtower
+ARCHINCLUDES += -I$(TOPDIR)/arch/riscv32/esp32c3/src/esp-hal
+ARCHINCLUDES += -I$(TOPDIR)/arch/riscv32/esp32c3/src/esp-hal/libc_min
+ARCHINCLUDES += -I$(TOPDIR)/arch/riscv32/esp32c3/src/esp32c3_supermini/nonsecure
+ARCHINCLUDES += -I$(TOPDIR)/freertos/include
+ARCHINCLUDES += -I$(TOPDIR)/freertos/portable/GCC/RISC-V
+ARCHINCLUDES += -I$(TOPDIR)/freertos/portable/GCC/RISC-V/chip_specific_extensions/RV32I_ESP32C3_no_extensions
+
+# Optional ESP-IDF register headers (path-referenced, not a full IDF build).
+ifneq ($(wildcard $(ESP_IDF)/components/soc/esp32c3/include),)
+  ARCHINCLUDES += -I$(ESP_IDF)/components/soc/esp32c3/include
+  ARCHINCLUDES += -I$(ESP_IDF)/components/soc/esp32c3/register
+  ARCHINCLUDES += -I$(ESP_IDF)/components/soc/include
+  ARCHDEFINES += -DMT_HAVE_ESP_IDF_HEADERS=1
+endif
+
+ARCHDEFINES += -DARCH_RISCV -DESP32C3 -DCONFIG_FREERTOS
+ARCHDEFINES += -DportUSING_MPU_WRAPPERS=0
+ARCHDEFINES += -DconfigCLINT_BASE_ADDRESS=0
+ARCHDEFINES += -DportHANDLE_INTERRUPT=esp_port_handle_interrupt
+ARCHDEFINES += -DportHANDLE_EXCEPTION=esp_port_handle_exception
+
+CFLAGS  = -std=gnu99 -pipe -ffreestanding -nostdlib
+CFLAGS += $(ARCHWARNINGS) $(ARCHOPTIMIZATION) $(ARCHCPUFLAGS) $(ARCHINCLUDES) $(ARCHDEFINES)
+
+AFLAGS = $(CFLAGS) -D__ASSEMBLY__
+
+LDFLAGS = $(ARCHOPTIMIZATION) -Wl,--gc-sections
+
+ASMEXT = .S
+OBJEXT = .o
+LIBEXT = .a
+EXEEXT = .elf
+HEXEXT = .hex
+
+ECHO = `which echo`
+
+HOSTCC = gcc
+HOSTINCLUDES = -I.
+HOSTCFLAGS = -Wall -Wstrict-prototypes -Wshadow -Wundef -g -pipe
+HOSTLDFLAGS =
+
+GREEN=\033[0;32m
+NORMAL=\033[0m
+BLACK=\033[0;30m1
+RED=\033[0;31m
+YELLOW=\033[0;33m
+BLUE=\033[0;34m
+MAGENTA=\033[0;35m
+CYAN=\033[0;36m
+GRAY=\033[0;37m

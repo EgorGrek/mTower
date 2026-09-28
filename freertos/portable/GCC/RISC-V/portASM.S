@@ -748,6 +748,10 @@ xPortStartFirstTask:
 	store_x  t1, 0( t2 )				/* Write sp saved value to first TCB member. */
 
 	/* enable interrupt */
+    #ifndef portasmHAS_STANDARD_MIE
+        #define portasmHAS_STANDARD_MIE 1
+    #endif
+    #if( portasmHAS_STANDARD_MIE != 0 )
     #if( portasmHAS_CLINT != 0 )
 	    li t0, 0x880
 	    csrs mie, t0
@@ -755,6 +759,7 @@ xPortStartFirstTask:
 	    li t0, 0x800
 	    csrs mie, t0
     #endif /* ( portasmHAS_CLINT != 0 ) */
+    #endif /* ( portasmHAS_STANDARD_MIE != 0 ) */
 
 	portRESTORE_BaseReg
 
